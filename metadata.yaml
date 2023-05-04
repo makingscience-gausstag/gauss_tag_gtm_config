@@ -1,0 +1,5 @@
+homepage: "https://www.makingscience.com"
+documentation: "<INSERT-GITHUB-LINK-HERE>"
+versions:
+  - sha: <INSERT-COMMIT-SHA-WITH-PREPARED-TEMPLATRE-HERE>
+    changeNotes: Initial release.
