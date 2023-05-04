@@ -1,6 +1,6 @@
 pipelines:
   tags:
-    'test-*':
+    'release-*':
         - step:
             name: Sync GitHub Mirror
             image: alpine/git:latest
