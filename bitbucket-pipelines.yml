@@ -9,5 +9,5 @@ pipelines:
             script:
               - git clone --bare git@bitbucket.org:i2tic/gauss_tag_gtm_config.git
               - cd gauss_tag_gtm_config.git
-              - git remote add git@github.com:makingscience-gausstag/gauss_tag_gtm_config-alpha.git
+              - git remote add github-repo git@github.com:makingscience-gausstag/gauss_tag_gtm_config-alpha.git
               - git push github-repo master:main
