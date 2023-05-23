@@ -1,12 +1,4 @@
-﻿___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "type": "TAG",
@@ -77,7 +69,7 @@ ___TEMPLATE_PARAMETERS___
     "type": "SELECT",
     "name": "userProvider",
     "displayName": "Visitor Identification Source",
-    "macrosInSelect": true,
+    "macrosInSelect": false,
     "selectItems": [
       {
         "value": "local",
@@ -135,7 +127,8 @@ ___TEMPLATE_PARAMETERS___
     "type": "TEXT",
     "name": "gpId",
     "displayName": "Gauss Tag Id",
-    "simpleValueType": true
+    "simpleValueType": true,
+    "help": "(Advanced) Tag Identification used for dissambiguating concurrent tag access (do not use without customer support)"
   },
   {
     "type": "TEXT",
