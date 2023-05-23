@@ -81,8 +81,32 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "notSetText": "local",
-    "defaultValue": ""
+    "notSetText": "local"
+  },
+  {
+    "type": "RADIO",
+    "name": "getGA",
+    "radioItems": [
+      {
+        "value": true,
+        "displayValue": "yes"
+      },
+      {
+        "value": false,
+        "displayValue": "no"
+      }
+    ],
+    "simpleValueType": true,
+    "defaultValue": true,
+    "displayName": "Get Google Analytics Client ID",
+    "help": "If set, does a best effort to include the GA client ID (appies when visitor id is generated locally)"
+  },
+  {
+    "type": "TEXT",
+    "name": "gaObjectName",
+    "displayName": "Google Analytics Variable Name",
+    "simpleValueType": true,
+    "defaultValue": "ga"
   },
   {
     "type": "TEXT",
@@ -104,6 +128,14 @@ ___TEMPLATE_PARAMETERS___
     "name": "gpId",
     "displayName": "Gauss Tag Id",
     "simpleValueType": true
+  },
+  {
+    "type": "TEXT",
+    "name": "dataLayerId",
+    "displayName": "Data Layer ID",
+    "simpleValueType": true,
+    "defaultValue": "dataLayer",
+    "help": "Name of dataLayer variable"
   },
   {
     "type": "LABEL",
