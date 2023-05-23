@@ -1,4 +1,12 @@
-﻿___INFO___
+﻿___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
+___INFO___
 
 {
   "type": "TAG",
@@ -81,7 +89,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "notSetText": "local"
+    "defaultValue": "local"
   },
   {
     "type": "RADIO",
@@ -254,61 +262,62 @@ if (queryPermission('inject_script', data.pixelUrl)) {
 /******************************************
   Gauss Tag configuration
 ******************************************/
-
-let extraProperties = {};
-let gaussId = "default";
-let enableManualMode = data.enableManualMode;
-let requestUrl = data.trackingId;
-let includeRegex = data.includeRegex;
-let excludeRegex = data.excludeRegex;
+let properties = {
+  enableManualMode: data.enableManualMode,
+  sender: {
+    requestUrl: data.trackingId
+  },
+  user: {
+    provider: data.userProvider,
+    gaObjectName: data.gaObjectName,
+    getGAClientId: data.getGA
+  },
+  dataLayer: {
+    include: data.includeRegex,
+    exclude: data.excludeRegex,
+    dataLayerId: data.dataLayerId
+  }
+};
+// Default values
+let gaussId = 'default';
 let dataLayerProvider = "GTM";
 let dataLayerId = "dataLayer";
 
+// Overwrite the propertes with extra properties
 if (data.extraProperties) {
-  unflattenObject(data.extraProperties);
-}
-
-// Check if gauss id is set
-if (data.gpId !== '' && data.gpId !== null && typeof(data.gpId) !== undefined) {
-  gaussId = data.gpId;
-}
-
-if (typeof extraProperties.sender === 'undefined') {
-  extraProperties.sender = {};
+  updateObject(properties, unflattenObject(data.extraProperties));
 }
 
 // If requestUrl does not start with https:// prepend it
-if (requestUrl.indexOf('https://') !== 0) {
-  requestUrl = 'https://' + requestUrl;
+if (properties.sender.requestUrl.indexOf('https://') !== 0) {
+  properties.sender.requestUrl = 'https://' + properties.sender.requestUrl;
 }
 // if requestUrl does not have path part
-if (requestUrl.lastIndexOf('/') === 7) {
-  requestUrl += '/data';
-}
-
-if (!extraProperties.dataLayer) {
-  extraProperties.dataLayer = {};
+if (properties.sender.requestUrl.lastIndexOf('/') === 7) {
+  properties.sender.requestUrl += '/data';
 }
 
 // check if dataLayer provider is not set
-if (!extraProperties.dataLayer.provider) {
-  extraProperties.dataLayer.provider = dataLayerProvider;
+if (!properties.dataLayer.provider) {
+  properties.dataLayer.provider = dataLayerProvider;
 }
 
 // check if dataLayerId is not set
-if (!extraProperties.dataLayer.dataLayerId) {
-  extraProperties.dataLayer.dataLayerId = dataLayerId;
+if (!properties.dataLayer.dataLayerId) {
+  properties.dataLayer.dataLayerId = dataLayerId;
 }
 
-extraProperties.id = gaussId;
-extraProperties.enableManualMode = enableManualMode;
-extraProperties.dataLayer.include = includeRegex;
-extraProperties.dataLayer.exclude = excludeRegex;
-extraProperties.sender.requestUrl = requestUrl;
+// Check if id is set
+if (properties.id) {
+  gaussId = properties.id;
+} else if (data.gpId) {
+  gaussId = data.gpId;
+  properties.id = gaussId;
+}
 
-log(extraProperties);
+log(properties);
 
-callInWindow('gp_send', 'config', gaussId, extraProperties);
+callInWindow('gp_send', 'config', gaussId, properties);
 
 data.gtmOnSuccess();
 
