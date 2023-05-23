@@ -1,6 +1,7 @@
-# Gauss Tag Configuration
+# Gauss AI Configuration Tag
 
-This template allows inserting the Gauss Tag script from Google Tag Manager.
+This template configures the Gauss Tag, supporting AI Value Based Bidding and more.
 
-:warning: Known limitation: the inserted script's URL must match the
-pre-defined format which in our case is: `https://storage.googleapis.com/*`
+Visit [our site](https://www.makingscience.com/gauss/) for more information.
+
+
