@@ -1,12 +1,4 @@
-﻿___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "type": "TAG",
@@ -14,7 +6,7 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "Gauss Tag Configuration",
-  "description": "Configures the Gauss Tag",
+  "description": "Configures the Gauss Tag supporting AI Value Based Bidding and more. \nhttps://www.makingscience.com/gauss/",
   "brand": {
     "id": "brand_dummy",
     "displayName": "Making Science",
@@ -51,14 +43,15 @@ ___TEMPLATE_PARAMETERS___
     "type": "TEXT",
     "name": "trackingId",
     "displayName": "Tracking Id",
-    "help": "Data Collection endpoint, as provided by Making Science",
+    "help": "Customer Tracking ID, as provided by Making Science",
     "simpleValueType": true,
     "valueHint": "example.com"
   },
   {
     "type": "RADIO",
     "name": "enableManualMode",
-    "displayName": "Enable manual mode",
+    "displayName": "Mode of Operation",
+    "help": "Choose Auto for automatically capturing Data Layer updates, Manual to explicitly send events",
     "radioItems": [
       {
         "value": false,
@@ -73,15 +66,36 @@ ___TEMPLATE_PARAMETERS___
     "defaultValue": true
   },
   {
+    "type": "SELECT",
+    "name": "userProvider",
+    "displayName": "Visitor Identification Source",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "local",
+        "displayValue": "local"
+      },
+      {
+        "value": "GA",
+        "displayValue": "GA"
+      }
+    ],
+    "simpleValueType": true,
+    "notSetText": "local",
+    "defaultValue": ""
+  },
+  {
     "type": "TEXT",
     "name": "excludeRegex",
     "displayName": "Exclude pattern",
+    "help": "Black-list pattern for Data Layer updates (Auto mode only)",
     "simpleValueType": true,
     "defaultValue": "event\": *\"gtm\"|\"event\": *\"gauss\""
   },
   {
     "type": "TEXT",
     "name": "includeRegex",
+    "help": "White-list pattern for Data Layer updates (Auto mode only)",
     "displayName": "Include pattern",
     "simpleValueType": true
   },
@@ -89,8 +103,7 @@ ___TEMPLATE_PARAMETERS___
     "type": "TEXT",
     "name": "gpId",
     "displayName": "Gauss Tag Id",
-    "simpleValueType": true,
-    "defaultValue": "default"
+    "simpleValueType": true
   },
   {
     "type": "LABEL",
