@@ -1,5 +1,5 @@
 homepage: "https://www.makingscience.com"
-documentation: "<INSERT-GITHUB-LINK-HERE>"
+documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
-  - sha: <INSERT-COMMIT-SHA-WITH-PREPARED-TEMPLATRE-HERE>
+  - sha: e10f14f2b05bb4b5e47b3e0d2bf10aef9df9439c
     changeNotes: Initial release.
