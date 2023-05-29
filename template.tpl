@@ -122,7 +122,7 @@ ___TEMPLATE_PARAMETERS___
     "displayName": "Exclude pattern",
     "help": "Black-list pattern for Data Layer updates (Auto mode only)",
     "simpleValueType": true,
-    "defaultValue": "event\": *\"gtm\"|\"event\": *\"gauss\""
+    "defaultValue": "event\": *\"gtm|\"event\": *\"gauss"
   },
   {
     "type": "TEXT",
