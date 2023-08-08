@@ -1,4 +1,4 @@
-﻿___TERMS_OF_SERVICE___
+﻿﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -152,6 +152,13 @@ ___TEMPLATE_PARAMETERS___
     "displayName": "Additional Tag Properties"
   },
   {
+    "type": "TEXT",
+    "name": "messageFormat",
+    "displayName": "Format of the data sent to server. `v1` or `v1Compressed`",
+    "simpleValueType": true,
+    "defaultValue": "v1Compressed"
+  },
+  {
     "type": "SIMPLE_TABLE",
     "name": "extraProperties",
     "displayName": "",
@@ -266,7 +273,8 @@ if (queryPermission('inject_script', data.pixelUrl)) {
 let properties = {
   enableManualMode: data.enableManualMode,
   sender: {
-    requestUrl: data.trackingId
+    requestUrl: data.trackingId,
+    messageFormat: data.messageFormat
   },
   user: {
     provider: data.userProvider,
@@ -306,6 +314,11 @@ if (!properties.dataLayer.provider) {
 // check if dataLayerId is not set
 if (!properties.dataLayer.dataLayerId) {
   properties.dataLayer.dataLayerId = dataLayerId;
+}
+
+// check if messageFormat is not set
+if (!properties.sender.messageFormat) {
+  properties.sender.messageFormat = 'v1Compressed';
 }
 
 // Check if id is set
@@ -613,5 +626,4 @@ scenarios:
 ___NOTES___
 
 Created on 11/25/2022, 11:55:01 AM
-
 
