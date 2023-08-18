@@ -147,16 +147,26 @@ ___TEMPLATE_PARAMETERS___
     "help": "Name of dataLayer variable"
   },
   {
+    "type": "SELECT",
+    "name": "messageFormat",
+    "displayName": "Format of the data sent to server. `v1` or `v1Compressed`",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "v1Compressed",
+        "displayValue": "v1Compressed"
+      },
+      {
+        "value": "v1",
+        "displayValue": "v1"
+      }
+    ],
+    "simpleValueType": true
+  },
+  {
     "type": "LABEL",
     "name": "extraPropertiesLabel",
     "displayName": "Additional Tag Properties"
-  },
-  {
-    "type": "TEXT",
-    "name": "messageFormat",
-    "displayName": "Format of the data sent to server. `v1` or `v1Compressed`",
-    "simpleValueType": true,
-    "defaultValue": "v1Compressed"
   },
   {
     "type": "SIMPLE_TABLE",
