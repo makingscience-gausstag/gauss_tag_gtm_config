@@ -106,7 +106,8 @@ ___TEMPLATE_PARAMETERS___
         "displayValue": "v1"
       }
     ],
-    "simpleValueType": true
+    "simpleValueType": true,
+    "defaultValue": "v1Compressed"
   },
   {
     "type": "RADIO",
@@ -138,8 +139,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "excludeRegex",
     "displayName": "Exclude pattern",
     "help": "Black-list pattern for Data Layer updates (Auto mode only)",
-    "simpleValueType": true,
-    "defaultValue": "event\": *\"gtm|\"event\": *\"gauss"
+    "simpleValueType": true
   },
   {
     "type": "TEXT",
@@ -283,24 +283,18 @@ if (queryPermission('inject_script', data.pixelUrl)) {
 let properties = {
   enableManualMode: data.enableManualMode,
   sender: {
-    requestUrl: data.trackingId,
-    messageFormat: data.messageFormat
+    requestUrl: data.trackingId
   },
   user: {
     provider: data.userProvider,
-    gaObjectName: data.gaObjectName,
     getGAClientId: data.getGA
   },
   dataLayer: {
-    include: data.includeRegex,
-    exclude: data.excludeRegex,
-    dataLayerId: data.dataLayerId
+    provider: "GTM"
   }
 };
 // Default values
 let gaussId = 'default';
-let dataLayerProvider = "GTM";
-let dataLayerId = "dataLayer";
 
 // Overwrite the propertes with extra properties
 if (data.extraProperties) {
@@ -316,19 +310,28 @@ if (properties.sender.requestUrl.lastIndexOf('/') === 7) {
   properties.sender.requestUrl += '/data';
 }
 
-// check if dataLayer provider is not set
-if (!properties.dataLayer.provider) {
-  properties.dataLayer.provider = dataLayerProvider;
+if (data.gaObjectName) {
+  properties.gaObjectName = data.gaObjectName;
 }
 
 // check if dataLayerId is not set
-if (!properties.dataLayer.dataLayerId) {
-  properties.dataLayer.dataLayerId = dataLayerId;
+if (data.dataLayerId) {
+  properties.dataLayer.dataLayerId = data.dataLayerId;
 }
 
 // check if messageFormat is not set
-if (!properties.sender.messageFormat) {
-  properties.sender.messageFormat = 'v1Compressed';
+if (data.messageFormat) {
+  properties.sender.messageFormat = data.messageFormat;
+}
+
+// check if dataLayer exclusion regex is defined
+if (data.excludeRegex) {
+  properties.dataLayer.exclude = data.excludeRegex;
+}
+
+// check if dataLayer inclusion regex is defined
+if (data.includeRegex) {
+  properties.dataLayer.include = data.includeRegex;
 }
 
 // Check if id is set
