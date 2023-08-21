@@ -1,4 +1,4 @@
-﻿﻿___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -50,8 +50,8 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "trackingId",
-    "displayName": "Tracking Id",
-    "help": "Customer Tracking ID, as provided by Making Science",
+    "displayName": "Customer Id",
+    "help": "Customer Identification provided by Making Science",
     "simpleValueType": true,
     "valueHint": "example.com"
   },
@@ -90,6 +90,23 @@ ___TEMPLATE_PARAMETERS___
     ],
     "simpleValueType": true,
     "defaultValue": "local"
+  },
+  {
+    "type": "SELECT",
+    "name": "messageFormat",
+    "displayName": "Format of the data sent to server. `v1` or `v1Compressed`",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "v1Compressed",
+        "displayValue": "v1Compressed"
+      },
+      {
+        "value": "v1",
+        "displayValue": "v1"
+      }
+    ],
+    "simpleValueType": true
   },
   {
     "type": "RADIO",
@@ -133,13 +150,6 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "TEXT",
-    "name": "gpId",
-    "displayName": "Gauss Tag Id",
-    "simpleValueType": true,
-    "help": "(Advanced) Tag Identification used for dissambiguating concurrent tag access (do not use without customer support)"
-  },
-  {
-    "type": "TEXT",
     "name": "dataLayerId",
     "displayName": "Data Layer ID",
     "simpleValueType": true,
@@ -147,21 +157,11 @@ ___TEMPLATE_PARAMETERS___
     "help": "Name of dataLayer variable"
   },
   {
-    "type": "SELECT",
-    "name": "messageFormat",
-    "displayName": "Format of the data sent to server. `v1` or `v1Compressed`",
-    "macrosInSelect": false,
-    "selectItems": [
-      {
-        "value": "v1Compressed",
-        "displayValue": "v1Compressed"
-      },
-      {
-        "value": "v1",
-        "displayValue": "v1"
-      }
-    ],
-    "simpleValueType": true
+    "type": "TEXT",
+    "name": "gpId",
+    "displayName": "Gauss Tag Id",
+    "simpleValueType": true,
+    "help": "(Advanced) Tag Identification used for dissambiguating concurrent tag access (do not use without customer support)"
   },
   {
     "type": "LABEL",
@@ -636,4 +636,5 @@ scenarios:
 ___NOTES___
 
 Created on 11/25/2022, 11:55:01 AM
+
 
