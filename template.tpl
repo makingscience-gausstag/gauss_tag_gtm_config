@@ -89,12 +89,13 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
+    "help": "Configures how the visitor id is obtained, autonomously (local) or from Google Analytics ClientId (GA)",
     "defaultValue": "local"
   },
   {
     "type": "SELECT",
     "name": "messageFormat",
-    "displayName": "Format of the data sent to server. `v1` or `v1Compressed`",
+    "displayName": "Data Format",
     "macrosInSelect": false,
     "selectItems": [
       {
@@ -107,6 +108,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
+    "help": "Defines the data transmission format. Set to v1Compressed unless in legacy installations using v1 (which should anyway process the newer version seamlessly).",
     "defaultValue": "v1Compressed"
   },
   {
@@ -132,6 +134,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "gaObjectName",
     "displayName": "Google Analytics Variable Name",
     "simpleValueType": true,
+    "help": "Name of the Google Analytics variable (generally ga)",
     "defaultValue": "ga"
   },
   {
