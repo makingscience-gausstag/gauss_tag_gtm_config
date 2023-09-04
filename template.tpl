@@ -50,8 +50,8 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "trackingId",
-    "displayName": "Tracking Id",
-    "help": "Customer Tracking ID, as provided by Making Science",
+    "displayName": "Customer Id",
+    "help": "Customer Identification provided by Making Science",
     "simpleValueType": true,
     "valueHint": "example.com"
   },
@@ -89,7 +89,27 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
+    "help": "Configures how the visitor id is obtained, autonomously (local) or from Google Analytics ClientId (GA)",
     "defaultValue": "local"
+  },
+  {
+    "type": "SELECT",
+    "name": "messageFormat",
+    "displayName": "Data Format",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "v1Compressed",
+        "displayValue": "v1Compressed"
+      },
+      {
+        "value": "v1",
+        "displayValue": "v1"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "Defines the data transmission format. Set to v1Compressed unless in legacy installations using v1 (which should anyway process the newer version seamlessly).",
+    "defaultValue": "v1Compressed"
   },
   {
     "type": "RADIO",
@@ -114,6 +134,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "gaObjectName",
     "displayName": "Google Analytics Variable Name",
     "simpleValueType": true,
+    "help": "Name of the Google Analytics variable (generally ga)",
     "defaultValue": "ga"
   },
   {
@@ -121,8 +142,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "excludeRegex",
     "displayName": "Exclude pattern",
     "help": "Black-list pattern for Data Layer updates (Auto mode only)",
-    "simpleValueType": true,
-    "defaultValue": "event\": *\"gtm|\"event\": *\"gauss"
+    "simpleValueType": true
   },
   {
     "type": "TEXT",
@@ -133,18 +153,18 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "TEXT",
-    "name": "gpId",
-    "displayName": "Gauss Tag Id",
-    "simpleValueType": true,
-    "help": "(Advanced) Tag Identification used for dissambiguating concurrent tag access (do not use without customer support)"
-  },
-  {
-    "type": "TEXT",
     "name": "dataLayerId",
     "displayName": "Data Layer ID",
     "simpleValueType": true,
     "defaultValue": "dataLayer",
     "help": "Name of dataLayer variable"
+  },
+  {
+    "type": "TEXT",
+    "name": "gpId",
+    "displayName": "Gauss Tag Id",
+    "simpleValueType": true,
+    "help": "(Advanced) Tag Identification used for dissambiguating concurrent tag access (do not use without customer support)"
   },
   {
     "type": "LABEL",
@@ -270,19 +290,14 @@ let properties = {
   },
   user: {
     provider: data.userProvider,
-    gaObjectName: data.gaObjectName,
     getGAClientId: data.getGA
   },
   dataLayer: {
-    include: data.includeRegex,
-    exclude: data.excludeRegex,
-    dataLayerId: data.dataLayerId
+    provider: "GTM"
   }
 };
 // Default values
 let gaussId = 'default';
-let dataLayerProvider = "GTM";
-let dataLayerId = "dataLayer";
 
 // Overwrite the propertes with extra properties
 if (data.extraProperties) {
@@ -298,14 +313,29 @@ if (properties.sender.requestUrl.lastIndexOf('/') === 7) {
   properties.sender.requestUrl += '/data';
 }
 
-// check if dataLayer provider is not set
-if (!properties.dataLayer.provider) {
-  properties.dataLayer.provider = dataLayerProvider;
+if (data.gaObjectName) {
+  properties.gaObjectName = data.gaObjectName;
 }
 
 // check if dataLayerId is not set
-if (!properties.dataLayer.dataLayerId) {
-  properties.dataLayer.dataLayerId = dataLayerId;
+if (data.dataLayerId) {
+  properties.dataLayer.dataLayerId = data.dataLayerId;
+}
+
+// check if messageFormat is not set
+if (data.messageFormat) {
+  properties.sender.messageFormat = data.messageFormat;
+}
+
+// check if dataLayer exclusion regex is defined
+// append the default to avoid re-triggering of own events
+if (data.excludeRegex) {
+  properties.dataLayer.exclude = data.excludeRegex + '|event": *"gtm|event": *"gauss|"0": *"';
+}
+
+// check if dataLayer inclusion regex is defined
+if (data.includeRegex) {
+  properties.dataLayer.include = data.includeRegex;
 }
 
 // Check if id is set
