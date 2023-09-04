@@ -1,7 +1,7 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
-  - sha: 0c34a142756ac301d8c659a37912a70232c4edf5
+  - sha: ffc04ab8af8bd3761387a02917051adb980f6ef9
     changeNotes: |2
       introduced field for messageFormat (default v1Compressed)
   - sha: 002b07ab7d98792e75a9b5433e47ce6de2b88d77

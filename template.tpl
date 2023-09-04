@@ -328,8 +328,9 @@ if (data.messageFormat) {
 }
 
 // check if dataLayer exclusion regex is defined
+// append the default to avoid re-triggering of own events
 if (data.excludeRegex) {
-  properties.dataLayer.exclude = data.excludeRegex;
+  properties.dataLayer.exclude = data.excludeRegex + '|event": *"gtm|event": *"gauss|"0": *"';
 }
 
 // check if dataLayer inclusion regex is defined
