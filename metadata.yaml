@@ -1,15 +1,15 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
-  - sha: 8bfdbb561a0b7375078c23553d4c21b3319cf3cb
+  - sha: e092dc96ee3537820debff30b7aacaf9c655eda3
     changeNotes: |2
       added official hostnames to list of allowed url patterns.
   - sha: 92506af9b18565199f12c36479d64c535299cbd4
     changeNotes: |2
-      enforces exclusion of gtm and self-triggered events
-      introduced field for messageFormat (default v1Compressed)
+      enforces exclusion of gtm and self-triggered events.
+      introduced field for messageFormat (default v1Compressed).
   - sha: 002b07ab7d98792e75a9b5433e47ce6de2b88d77
     changeNotes: |2
-      Fixed typo in excludeRegex
+      Fixed typo in excludeRegex.
   - sha: a3445ca644946ca729ad8a6254d1c8bd0c4ea41a
     changeNotes: Initial release.
