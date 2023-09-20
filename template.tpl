@@ -37,9 +37,10 @@ ___TEMPLATE_PARAMETERS___
     "type": "TEXT",
     "name": "pixelUrl",
     "displayName": "Gauss Tag Script URL",
-    "help": "URL hosting the tag code, as provided by Making Science",
+    "help": "Core Javascript URL",
     "simpleValueType": true,
-    "valueHint": "https://storage.googleapis.com/gauss_tag.js"
+    "valueHint": "https://gsatag.makingscience.com/gauss-sa-tag.min.js",
+    "defaultValue": "https://gsatag.makingscience.com/v1.0.4/gauss-sa-tag.min.js"
   },
   {
     "type": "LABEL",
