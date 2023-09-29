@@ -37,16 +37,10 @@ ___TEMPLATE_PARAMETERS___
     "type": "TEXT",
     "name": "pixelUrl",
     "displayName": "Gauss Tag Script URL",
-    "help": "Core Javascript URL",
+    "help": "Supporting Javascript URL",
     "simpleValueType": true,
     "valueHint": "https://gsatag.makingscience.com/gauss-sa-tag.min.js",
-    "defaultValue": "https://gsatag.makingscience.com/v1.0.4/gauss-sa-tag.min.js"
-  },
-  {
-    "type": "LABEL",
-    "name": "propertiesLabel",
-    "displayName": "Tag Properties",
-    "help": "Tag Properties usually customized"
+    "defaultValue": "https://gsatag.makingscience.com/v1.1.0/gauss-sa-tag.min.js"
   },
   {
     "type": "TEXT",
@@ -60,7 +54,7 @@ ___TEMPLATE_PARAMETERS___
     "type": "RADIO",
     "name": "enableManualMode",
     "displayName": "Mode of Operation",
-    "help": "Choose Auto for automatically capturing Data Layer updates, Manual to explicitly send events",
+    "help": "in Auto mode, capture page load and dataLayer events automatically. Otherwise, push events explicitly.",
     "radioItems": [
       {
         "value": false,
@@ -72,7 +66,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "defaultValue": true
+    "defaultValue": false
   },
   {
     "type": "SELECT",
@@ -87,30 +81,19 @@ ___TEMPLATE_PARAMETERS___
       {
         "value": "GA",
         "displayValue": "GA"
-      }
-    ],
-    "simpleValueType": true,
-    "help": "Configures how the visitor id is obtained, autonomously (local) or from Google Analytics ClientId (GA)",
-    "defaultValue": "local"
-  },
-  {
-    "type": "SELECT",
-    "name": "messageFormat",
-    "displayName": "Data Format",
-    "macrosInSelect": false,
-    "selectItems": [
-      {
-        "value": "v1Compressed",
-        "displayValue": "v1Compressed"
       },
       {
-        "value": "v1",
-        "displayValue": "v1"
+        "value": "cookie",
+        "displayValue": "cookie"
+      },
+      {
+        "value": "globalvar",
+        "displayValue": "global"
       }
     ],
     "simpleValueType": true,
-    "help": "Defines the data transmission format. Set to v1Compressed unless in legacy installations using v1 (which should anyway process the newer version seamlessly).",
-    "defaultValue": "v1Compressed"
+    "help": "Configures how the Visitor Id is obtained: (local) generate autonomously, (GA) use clientId from GA, (cookie) from cookie, (global) from global variable path. Below are parameters for fine-tuning each of the methods.",
+    "defaultValue": "local"
   },
   {
     "type": "RADIO",
@@ -128,29 +111,40 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "defaultValue": true,
     "displayName": "Get Google Analytics Client ID",
-    "help": "If set, does a best effort to include the GA client ID (appies when visitor id is generated locally)"
-  },
-  {
-    "type": "TEXT",
-    "name": "gaObjectName",
-    "displayName": "Google Analytics Variable Name",
-    "simpleValueType": true,
-    "help": "Name of the Google Analytics variable (generally ga)",
-    "defaultValue": "ga"
+    "help": "This parameter applies when the Visitor Identification Source is different than GA. It enables doing a best-effort in getting GA clientId, that is sent as well, withoutt blocking the sending of upstream events if not set."
   },
   {
     "type": "TEXT",
     "name": "excludeRegex",
-    "displayName": "Exclude pattern",
-    "help": "Black-list pattern for Data Layer updates (Auto mode only)",
+    "displayName": "Data Layer Exclude Pattern",
+    "help": "Regular expression based pattern for Blacklisting Data Layer updates (Auto mode only).",
     "simpleValueType": true
   },
   {
     "type": "TEXT",
     "name": "includeRegex",
-    "help": "White-list pattern for Data Layer updates (Auto mode only)",
-    "displayName": "Include pattern",
+    "help": "Regular expression based pattern for Whitelisting Data Layer updates (Auto mode only). It is applied after the Black-list is. For example, you may use \".*\" to exclude all events, and a specific white-list, such as \"event\": *\"ee|\"pageType\" to just accept this subset of events.",
+    "displayName": "Data Layer Include Pattern",
     "simpleValueType": true
+  },
+  {
+    "type": "SELECT",
+    "name": "messageFormat",
+    "displayName": "Data Format",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "v1Compressed",
+        "displayValue": "v1Compressed"
+      },
+      {
+        "value": "v1",
+        "displayValue": "v1"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "Defines the data transmission format. Set to v1Compressed, unless maybe for legacy installations still using v1 (which should anyway process the newer version seamlessly).",
+    "defaultValue": "v1Compressed"
   },
   {
     "type": "TEXT",
@@ -158,7 +152,7 @@ ___TEMPLATE_PARAMETERS___
     "displayName": "Data Layer ID",
     "simpleValueType": true,
     "defaultValue": "dataLayer",
-    "help": "Name of dataLayer variable"
+    "help": "Name of the dataLayer variable"
   },
   {
     "type": "TEXT",
@@ -166,6 +160,142 @@ ___TEMPLATE_PARAMETERS___
     "displayName": "Gauss Tag Id",
     "simpleValueType": true,
     "help": "(Advanced) Tag Identification used for dissambiguating concurrent tag access (do not use without customer support)"
+  },
+  {
+    "type": "GROUP",
+    "name": "userLocalSettings",
+    "displayName": "Visitor Local Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "SELECT",
+        "name": "userLocalStorageType",
+        "displayName": "Local Visitor Storage Type",
+        "macrosInSelect": false,
+        "selectItems": [
+          {
+            "value": "cookie",
+            "displayValue": "cookie"
+          },
+          {
+            "value": "localStorage",
+            "displayValue": "localStorage"
+          }
+        ],
+        "simpleValueType": true,
+        "help": "(Advanced) (Local Visitor Id generation) Configures the type of storage for the Visitor Id: cookie (recommended) or localStorage."
+      },
+      {
+        "type": "TEXT",
+        "name": "userLocalStorageId",
+        "displayName": "Local Visitor Storage Id",
+        "simpleValueType": true,
+        "help": "(Advanced) (Local Visitor Id generation) Identifier for the cookie or localStorage variable."
+      },
+      {
+        "type": "TEXT",
+        "name": "userLocalIdLength",
+        "displayName": "Local Visitor Id Length",
+        "simpleValueType": true,
+        "valueValidators": [
+          {
+            "type": "POSITIVE_NUMBER"
+          }
+        ],
+        "help": "(Advanced) (Local Visitor Id generation) Visitor Id Length"
+      }
+    ],
+    "help": "Configures options for the local genration of Visitor ID."
+  },
+  {
+    "type": "GROUP",
+    "name": "userGASettings",
+    "displayName": "Visitor GA Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "gaObjectName",
+        "displayName": "Object Name",
+        "simpleValueType": true,
+        "help": "(Legacy) (GA Client Id Retrieval) Name of the Google Analytics global variable"
+      },
+      {
+        "type": "SIMPLE_TABLE",
+        "name": "gaIdRetrievalOrder",
+        "displayName": "Retrieval Options",
+        "simpleTableColumns": [
+          {
+            "defaultValue": "",
+            "displayName": "Method",
+            "name": "gaIdRetrievalOrderMethod",
+            "type": "SELECT",
+            "selectItems": [
+              {
+                "value": "ga4Gtag",
+                "displayValue": "ga4Gtag"
+              },
+              {
+                "value": "ga",
+                "displayValue": "ga"
+              },
+              {
+                "value": "ga4Cookie",
+                "displayValue": "ga4Cookie"
+              }
+            ]
+          }
+        ],
+        "help": "(GA Client Id Retrieval) Configures the order in which the different alternatives for obtaining GA clientId are attempted: ga4GTag (gaGlobal variable), ga4Cookie (_ga cookie), ga (legacy ga variable)"
+      }
+    ],
+    "help": "Configures options for the retrieval of Visitor Id based on Google Analytics ClientId. This uses the following mechanisms: _ga cookie, global variable gaGlobal.vid and (legacy) ga variable."
+  },
+  {
+    "type": "GROUP",
+    "name": "userCookieSettings",
+    "displayName": "Visitor Cookie Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "userCookieName",
+        "displayName": "Visitor Cookie Name",
+        "simpleValueType": true,
+        "help": "(Cookie based Visitor Id) Name of the cookie that contains the Visitor Id."
+      },
+      {
+        "type": "TEXT",
+        "name": "userCookieExtractRegex",
+        "displayName": "Visitor Cookie Extract Regex",
+        "simpleValueType": true,
+        "help": "(Cookie based Visitor Id) Regular expression that extracts the Visitor Id from the configured cookie name. IMPORTANT: it must contain a capture group. For instance: \"(.*)\" captures the whole cookie content."
+      },
+      {
+        "type": "TEXT",
+        "name": "userCookieRegexCaptureIndex",
+        "displayName": "Visitor Cookie Regex Capture Index",
+        "simpleValueType": true,
+        "help": "(Cookie based Visitor Id) Used when the Cookie Extract Regular Expression contains more than one capture group, to indicate which of them contains the actual Visitor Id."
+      }
+    ],
+    "help": "Configures options for the Cookie method for Visitor Id Retrieval."
+  },
+  {
+    "type": "GROUP",
+    "name": "userGlobalSettings",
+    "displayName": "Visitor Global Variable Settings",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "userGlobalPath",
+        "displayName": "Visitor Global Variable Path",
+        "simpleValueType": true,
+        "help": "(Global Variable Visitor Id generation) Path to the variable containing the Visitor Id. For example: \"gaGlobal.vid\""
+      }
+    ],
+    "help": "Configures options for the retrieval of Visitor Id based on global variable."
   },
   {
     "type": "LABEL",
@@ -190,6 +320,14 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT"
       }
     ]
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "disableDataLayer",
+    "checkboxText": "Disable Data Layer",
+    "simpleValueType": true,
+    "defaultValue": false,
+    "help": "(Advanced) Disables the automatic capture of dataLayer events, although page load events will still be captured."
   }
 ]
 
@@ -200,13 +338,19 @@ const copyFromWindow = require('copyFromWindow');
 const setInWindow = require('setInWindow');
 const callInWindow = require('callInWindow');
 const createQueue = require('createQueue');
+const getContainerVersion = require('getContainerVersion');
 
 const injectScript = require('injectScript');
 const queryPermission = require('queryPermission');
 const log = require('logToConsole');
 const Object = require('Object');
 
-log('data =', data);
+const cv = getContainerVersion();
+var doLog = cv.debugMode || cv.previewMode;
+
+if (doLog) {
+  log('data =', data);
+}
 
 /*******************************************
   Function definitions
@@ -272,11 +416,17 @@ function updateObject(targetObject, obj) {
 const gp_send = getGpSend();
 
 if (queryPermission('inject_script', data.pixelUrl)) {
-    log('Url is', data.pixelUrl);
+    if (doLog) {
+      log('url', data.pixelUrl);
+    }
     injectScript(data.pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, 'gp_send');
-    log('Successfully inserted the script');
+    if (doLog) {
+      log('Successfully inserted the script');
+    }
 } else {
-    log('Gauss Tag: Script load failed due to permissions mismatch.');
+    if (doLog) {
+      log('Gauss Tag: Script load failed due to permissions mismatch.');
+    }
     data.gtmOnFailure();
 }
 
@@ -291,11 +441,12 @@ let properties = {
   },
   user: {
     provider: data.userProvider,
-    getGAClientId: data.getGA
+    getGAClientId: data.getGA,
   },
   dataLayer: {
+    enabled: true,
     provider: "GTM"
-  }
+  },
 };
 // Default values
 let gaussId = 'default';
@@ -314,8 +465,51 @@ if (properties.sender.requestUrl.lastIndexOf('/') === 7) {
   properties.sender.requestUrl += '/data';
 }
 
-if (data.gaObjectName) {
-  properties.gaObjectName = data.gaObjectName;
+// ga user
+if (data.gaObjectName||data.gaIdRetrievalOrder) {
+  properties.user.ga = properties.user.ga ? properties.user.ga : {};
+  if (data.gaObjectName) {
+    properties.user.ga.objectName = data.gaObjectName;
+  }
+  if (data.gaIdRetrievalOrder) {
+    properties.user.ga.idRetrievalOrder = data.gaIdRetrievalOrder.map((e) => e.gaIdRetrievalOrderMethod);
+  }
+}
+
+// local user
+if (data.userLocalStorageType||data.userLocalStorageId||data.idLength) {
+  properties.user.local = properties.user.local ? properties.user.local : {};
+  if (data.userLocalStorageType) {
+    properties.user.local.storageType = data.userLocalStorageType;
+  }
+  if (data.userLocalStorageId) {
+    properties.user.local.storageId = data.userLocalStorageId;
+  }
+  if (data.userLocalIdLen) {
+    properties.user.local.idLen = data.userLocalIdLen;
+  }
+}
+
+// globalVar
+if (data.userGlobalPath) {
+  properties.user.globalVar = properties.user.globalVar ? properties.user.globalVar : {};
+  if (data.userGlobalPath) {
+    properties.user.globalVar.path = data.userGlobalPath;
+  }
+}
+
+// cookie
+if (data.userCookieName||data.userCookieExtractRegex||data.userCookieRegexCaptureIndex) {
+  properties.user.cookie = properties.user.cookie ? properties.user.cookie : {};
+  if (data.userCookieName) {
+    properties.user.cookie.name = data.userCookieName;
+  }
+  if (data.userCookieExtractRegex) {
+    properties.user.cookie.extractRegex = data.userCookieExtractRegex;
+  }
+  if (data.userCookieRegexCaptureIndex) {
+    properties.user.cookie.captureIndex = data.userCookieRegexCaptureIndex;
+  }
 }
 
 // check if dataLayerId is not set
@@ -339,6 +533,11 @@ if (data.includeRegex) {
   properties.dataLayer.include = data.includeRegex;
 }
 
+// nully dataLayer.provider
+if (data.disableDataLayer) {
+  properties.dataLayer.enabled = false;
+}
+
 // Check if id is set
 if (properties.id) {
   gaussId = properties.id;
@@ -347,7 +546,9 @@ if (properties.id) {
   properties.id = gaussId;
 }
 
-log(properties);
+if (doLog) {
+  log(properties);
+}
 
 callInWindow('gp_send', 'config', gaussId, properties);
 
@@ -628,6 +829,16 @@ ___WEB_PERMISSIONS___
       "isEditedByUser": true
     },
     "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "read_container_data",
+        "versionId": "1"
+      },
+      "param": []
+    },
+    "isRequired": true
   }
 ]
 
@@ -639,7 +850,11 @@ scenarios:
   code: |-
     const mockData = {
       // Mocked field values
-      pixelUrl: 'http://localhost:3000/ms_gauss_pixel_v2.js'
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0
     };
 
     // Call runCode to run the template's code.
