@@ -1,6 +1,13 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: b82eea5e35c0f5eba284ed3391f199867f1fa251 
+    changeNotes: |2
+      add support for new user providers - cookie, globalVar.
+      enhanced ga clientId retrieval using gaGlobal.vid and cookie
+      add option to disable dataLayer capture in Auto mode
+      fail gracefully if a duplicate tag id is detected
+      allow manual events to be sent in automatic mode
   - sha: cd11f05afe5ac782cecd9ca7248b9863d9e6601e
     changeNotes: |2
       includes tabId and instance id in payload
