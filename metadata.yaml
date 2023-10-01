@@ -1,6 +1,9 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: 37619c7edb84f2408b45fbe20d6298184235e536
+    changeNotes: |2
+      Gauss Tag Script URL is now optional, default is in code.
   - sha: b82eea5e35c0f5eba284ed3391f199867f1fa251 
     changeNotes: |2
       add support for new user providers - cookie, globalVar.
