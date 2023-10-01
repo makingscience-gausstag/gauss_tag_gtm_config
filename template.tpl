@@ -35,15 +35,6 @@ ___TEMPLATE_PARAMETERS___
 [
   {
     "type": "TEXT",
-    "name": "pixelUrl",
-    "displayName": "Gauss Tag Script URL",
-    "help": "Supporting Javascript URL",
-    "simpleValueType": true,
-    "valueHint": "https://gsatag.makingscience.com/gauss-sa-tag.min.js",
-    "defaultValue": "https://gsatag.makingscience.com/v1.1.0/gauss-sa-tag.min.js"
-  },
-  {
-    "type": "TEXT",
     "name": "trackingId",
     "displayName": "Customer Id",
     "help": "Customer Identification provided by Making Science",
@@ -153,6 +144,14 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "defaultValue": "dataLayer",
     "help": "Name of the dataLayer variable"
+  },
+  {
+    "type": "TEXT",
+    "name": "pixelUrl",
+    "displayName": "Gauss Tag Script URL Override",
+    "help": "(Advanced) Supporting Javascript URL. Set only if default override is needed",
+    "simpleValueType": true,
+    "valueHint": "https://gsatag.makingscience.com/gauss-sa-tag.min.js"
   },
   {
     "type": "TEXT",
@@ -413,13 +412,17 @@ function updateObject(targetObject, obj) {
   Gauss Tag insertion
 ******************************************/
 
+const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.1.0/gauss-sa-tag.min.js';
+
+let pixelUrl = data.pixelUrl ? data.pixelUrl : defaultPixelUrl;
+
 const gp_send = getGpSend();
 
-if (queryPermission('inject_script', data.pixelUrl)) {
+if (queryPermission('inject_script', pixelUrl)) {
     if (doLog) {
-      log('url', data.pixelUrl);
+      log('url', pixelUrl);
     }
-    injectScript(data.pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, 'gp_send');
+    injectScript(pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, 'gp_send');
     if (doLog) {
       log('Successfully inserted the script');
     }
