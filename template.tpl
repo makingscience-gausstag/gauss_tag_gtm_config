@@ -412,7 +412,7 @@ function updateObject(targetObject, obj) {
   Gauss Tag insertion
 ******************************************/
 
-const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.1.0/gauss-sa-tag.min.js';
+const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.2.0/gauss-sa-tag.min.js';
 
 let pixelUrl = data.pixelUrl ? data.pixelUrl : defaultPixelUrl;
 
