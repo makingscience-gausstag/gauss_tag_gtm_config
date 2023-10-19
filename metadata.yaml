@@ -1,6 +1,9 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: 92e66489297dcfe7c3e0551d9b921807a9587717
+    changeNotes: |2
+      more robust GA-clientId capture. extra logging on reject due to iframe
   - sha: 37619c7edb84f2408b45fbe20d6298184235e536
     changeNotes: |2
       Gauss Tag Script URL is now optional, default is in code.
