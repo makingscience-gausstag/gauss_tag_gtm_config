@@ -1,6 +1,9 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: 3d3824868491bfd23a3c31d1902f7211804393b2
+    changeNotes: |2
+      increased wait timeouts
   - sha: 92e66489297dcfe7c3e0551d9b921807a9587717
     changeNotes: |2
       more robust GA-clientId capture. extra logging on reject due to iframe
