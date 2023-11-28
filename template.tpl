@@ -297,6 +297,50 @@ ___TEMPLATE_PARAMETERS___
     "help": "Configures options for the retrieval of Visitor Id based on global variable."
   },
   {
+    "type": "GROUP",
+    "name": "trimming",
+    "displayName": "Client Trimming",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "clientTrimming",
+        "displayName": "Percentage of users sending events",
+        "simpleValueType": true,
+        "valueValidators": [
+          {
+            "type": "PERCENTAGE"
+          }
+        ],
+        "defaultValue": 100
+      }
+    ],
+    "help": "Options to send only a subset of client data"
+  },
+  {
+    "type": "GROUP",
+    "name": "urlFilter",
+    "displayName": "Url Filtering",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "urlExclude",
+        "displayName": "Excluded Urls Pattern",
+        "simpleValueType": true,
+        "help": "Enter a regular expression that has to be matched by urls in order to be excluded from pixel execution"
+      },
+      {
+        "type": "TEXT",
+        "name": "urlInclude",
+        "displayName": "Included Urls Pattern",
+        "simpleValueType": true,
+        "help": "Enter a regular expression that has to be matched by urls in order to be included in pixel execution. If it was not excluded no need to include it here. Use this one to create exceptions of the excluded ones."
+      }
+    ],
+    "help": "Configure the urls that has to be included/excluded from pixel execution. If no patterns are included all urls are accepted. If a pattern is created in excluded ones use the \"Included Urls Pattern\" to create exceptions for that rule."
+  },
+  {
     "type": "LABEL",
     "name": "extraPropertiesLabel",
     "displayName": "Additional Tag Properties"
@@ -548,6 +592,25 @@ if (properties.id) {
   gaussId = data.gpId;
   properties.id = gaussId;
 }
+
+// Set filtering options
+properties.filter = {};
+
+// Client trimming option
+if (data.clientTrimming && data.clientTrimming < 100) {
+  properties.filter.trimming = data.clientTrimming;
+}
+
+// Url exclusion option
+if (data.urlExclude) {
+  properties.filter.url_exclude = data.urlExclude; 
+}
+
+// Url inclusion option
+if (data.urlInclude) {
+  properties.filter.url_include = data.urlInclude; 
+}
+
 
 if (doLog) {
   log(properties);
@@ -850,7 +913,110 @@ ___TESTS___
 
 scenarios:
 - name: Base test
+  code: "const log = require('logToConsole');\n\nconst mockData = {\n  // Mocked field\
+    \ values\n  pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',\n\
+    \  trackingId: 'example.com',\n  enableManualMode: false,\n  userProvider: 'local',\n\
+    \  disableDataLayer: 0\n};\n\nconst callsInWindow = {};\n// Create the mock of\
+    \ callInWindow to store the functions called\nmock('callInWindow', (fnc, params)\
+    \ => {\n  log('Calling in window with fnc: ' + fnc, arguments);\n  let calledFncData\
+    \ = callsInWindow[fnc];\n  if (!calledFncData) {\n    calledFncData = [];\n  \
+    \  callsInWindow[fnc] = calledFncData;\n  }\n  calledFncData.push(arguments);\n\
+    });\n\nconst injectedScripts = [];\n\nmock('injectScript', (url) => {\n  log('Injecting\
+    \ script: ' + url);\n  \n  injectedScripts.push(url);\n});\n\n\n// Call runCode\
+    \ to run the template's code.\nrunCode(mockData);\n\n// Verify that the tag finished\
+    \ successfully.\nassertApi('gtmOnSuccess').wasCalled();\n\nlog('Injected scripts:\
+    \ ' + injectedScripts);\nassertThat(injectedScripts.length == 1 && injectedScripts[0]\
+    \ === mockData.pixelUrl, 'Expected script ' + mockData.pixelUrl + ' to be injected\
+    \ but found: ' + injectedScripts).isEqualTo(true);\n\nlog('Calls in window: ',\
+    \ callsInWindow);\nassertThat(callsInWindow.gp_send && callsInWindow.gp_send.length\
+    \ == 1, 'Expected a single call to gp_send but found').isEqualTo(true);\n\nassertThat(callsInWindow.gp_send[0][1],\
+    \ 'Expected gp_send called with event \"config\" but found: ' + callsInWindow.gp_send[0][1]).isEqualTo('config');\n\
+    \nassertThat(callsInWindow.gp_send[0][2], 'Expected gp_send called with gaus id\
+    \ \"default\" but found: ' + callsInWindow.gp_send[0][2]).isEqualTo('default');\n\
+    \nconst gpsConfig = callsInWindow.gp_send[0][3];\nlog('gp_send config: ', gpsConfig);\n\
+    const expectedRequestUrl = 'https://' + mockData.trackingId + '/data';\nassertThat(gpsConfig.sender.requestUrl\
+    \ === expectedRequestUrl, 'Expected request url to be set to \"' + expectedRequestUrl\
+    \ + '\" but found ' + gpsConfig.sender.requestUrl).isEqualTo(true); "
+- name: Check trimming is set
   code: |-
+    const log = require('logToConsole');
+
+    const mockData = {
+      // Mocked field values
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0,
+      clientTrimming: 10
+    };
+
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.filter && gpsConfig.filter.trimming, 'Expected trimming configured but not found ' + gpsConfig).isEqualTo(10);
+- name: Check trimming is omitted if set to 100%
+  code: |-
+    const log = require('logToConsole');
+
+    const mockData = {
+      // Mocked field values
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0,
+      clientTrimming: 100
+    };
+
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.filter && !gpsConfig.filter.trimming, 'Expected trimming not to be configured but not found ' + gpsConfig).isEqualTo(true);
+- name: Check url exclusion/inclusion empty if not set
+  code: |-
+    const log = require('logToConsole');
+
     const mockData = {
       // Mocked field values
       pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
@@ -860,11 +1026,147 @@ scenarios:
       disableDataLayer: 0
     };
 
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
     // Call runCode to run the template's code.
     runCode(mockData);
 
     // Verify that the tag finished successfully.
     assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.filter && !gpsConfig.filter.url_exclude && !gpsConfig.filter.url_include, 'Expected url inclusion/exclusion not to be configured but found ' + gpsConfig).isEqualTo(true);
+- name: Check url exclusion configured
+  code: |-
+    const log = require('logToConsole');
+
+    const mockData = {
+      // Mocked field values
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0,
+      urlExclude: '.*delivero\\.co\\.uk.*'
+    };
+
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.filter && gpsConfig.filter.url_exclude && gpsConfig.filter.url_exclude === mockData.urlExclude, 'Expected url exclusion to be configured but not found ' + gpsConfig).isEqualTo(true);
+- name: Check url inclusion configured
+  code: |-
+    const log = require('logToConsole');
+
+    const mockData = {
+      // Mocked field values
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0,
+      urlInclude: '.*delivero\\.co\\.uk.*'
+    };
+
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.filter && gpsConfig.filter.url_include && gpsConfig.filter.url_include === mockData.urlInclude, 'Expected url inclusion to be configured but not found ' + gpsConfig).isEqualTo(true);
+- name: Check url inclusion and exclusion configured
+  code: |-
+    const log = require('logToConsole');
+
+    const mockData = {
+      // Mocked field values
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0,
+      urlExclude: '.*delivero\\.co\\.uk.*',
+      urlInclude: '.*corporate\\.delivero\\.co\\.uk.*|.*delivero\\.co\\.uk/about-us.*'
+    };
+
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.filter && gpsConfig.filter.url_include && gpsConfig.filter.url_include === mockData.urlInclude, 'Expected url inclusion to be configured but not found ' + gpsConfig).isEqualTo(true);
+
+    assertThat(gpsConfig.filter && gpsConfig.filter.url_exclude && gpsConfig.filter.url_exclude === mockData.urlExclude, 'Expected url exclusion to be configured but not found ' + gpsConfig).isEqualTo(true);
 
 
 ___NOTES___
