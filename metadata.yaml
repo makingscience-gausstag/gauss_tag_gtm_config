@@ -1,6 +1,10 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: 97d8e3db27b37ff2ba436cb06d33e0c930fe7798
+    changeNotes: |2
+      Added new filtering properties (filter.trimming, filter.url_include and filter.url_exclude)
+      Added 7 unit tests to check behavior
   - sha: 3d3824868491bfd23a3c31d1902f7211804393b2
     changeNotes: |2
       increased wait timeouts
