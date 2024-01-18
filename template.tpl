@@ -1,12 +1,4 @@
-﻿___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "type": "TAG",
@@ -371,6 +363,21 @@ ___TEMPLATE_PARAMETERS___
     "simpleValueType": true,
     "defaultValue": false,
     "help": "(Advanced) Disables the automatic capture of dataLayer events, although page load events will still be captured."
+  },
+  {
+    "type": "GROUP",
+    "name": "Push",
+    "displayName": "DataLayer Push",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "thirdPartyCEnabled",
+        "checkboxText": "Send Third Party Cookies Enabled Event",
+        "simpleValueType": true
+      }
+    ],
+    "help": "Configure tag generated datalayer events such as \"third party cookies enabled\""
   }
 ]
 
@@ -456,7 +463,7 @@ function updateObject(targetObject, obj) {
   Gauss Tag insertion
 ******************************************/
 
-const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.2.2/gauss-sa-tag.min.js';
+const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.3.1/gauss-sa-tag.min.js';
 
 let pixelUrl = data.pixelUrl ? data.pixelUrl : defaultPixelUrl;
 
@@ -611,7 +618,12 @@ if (data.urlInclude) {
   properties.filter.url_include = data.urlInclude; 
 }
 
-
+// Datalayer tag generated pushes
+properties.push = {};
+if (data.thirdPartyCEnabled !== undefined) {
+  properties.push.thirdPartyCEnabled = data.thirdPartyCEnabled;
+}
+log('Push config: ' + properties.push.thirdPartyCEnabled);
 if (doLog) {
   log(properties);
 }
