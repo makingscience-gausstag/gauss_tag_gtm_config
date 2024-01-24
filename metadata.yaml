@@ -1,6 +1,10 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: 692c9bbc08b9b74f474f4270aebb49b3292105db
+    changeNotes: |2
+      Added option to detect if third party cookies are enabled and send that info as a new event
+      in the datalayer
   - sha: 97d8e3db27b37ff2ba436cb06d33e0c930fe7798
     changeNotes: |2
       Added new filtering properties (filter.trimming, filter.url_include and filter.url_exclude)
