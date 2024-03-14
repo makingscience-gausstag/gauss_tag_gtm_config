@@ -1,6 +1,9 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: eeb301cbf1d7ab7fe57191b051124ced875e2992
+    changeNotes: |2
+      Added option to inject ga4 session id in the messages sent to server
   - sha: 8c2f1ab700fce460a9c71297a2251f03a0891e29
     changeNotes: |2
       Added option to detect if third party cookies are enabled and send that info as a new event
