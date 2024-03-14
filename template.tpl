@@ -386,6 +386,22 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "help": "Configure tag generated datalayer events such as \"third party cookies enabled\""
+  },
+  {
+    "type": "GROUP",
+    "name": "Enrichers",
+    "displayName": "Enrichers",
+    "groupStyle": "ZIPPY_CLOSED",
+    "subParams": [
+      {
+        "type": "CHECKBOX",
+        "name": "enricherGa4SessionId",
+        "checkboxText": "GA4 Session Id",
+        "simpleValueType": true,
+        "defaultValue": false,
+        "help": "When set to true the pixel will retrieve the ga4 session id and send in the event message to gauss servers. Only enable this property if you are sure the client uses ga4. Enabling it without ga4 will produce delays in pixel initialization."
+      }
+    ]
   }
 ]
 
@@ -471,7 +487,8 @@ function updateObject(targetObject, obj) {
   Gauss Tag insertion
 ******************************************/
 
-const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.3.1/gauss-sa-tag.min.js';
+const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.3.2/gauss-sa-tag.min.js';
+
 
 let pixelUrl = data.pixelUrl ? data.pixelUrl : defaultPixelUrl;
 
@@ -633,7 +650,13 @@ if (data.thirdPartyCEnabled !== undefined) {
 }
 log('Push config: ' + properties.push.thirdPartyCEnabled);
 if (doLog) {
-  log(properties);
+  properties.logging = 'debug';
+  log('Config properties:', properties);
+}
+
+properties.msgEnrichers = {};
+if (data.enricherGa4SessionId !== undefined) {
+  properties.msgEnrichers.ga4sessionId = data.enricherGa4SessionId;
 }
 
 callInWindow('gp_send', 'config', gaussId, properties);
@@ -1187,10 +1210,47 @@ scenarios:
     assertThat(gpsConfig.filter && gpsConfig.filter.url_include && gpsConfig.filter.url_include === mockData.urlInclude, 'Expected url inclusion to be configured but not found ' + gpsConfig).isEqualTo(true);
 
     assertThat(gpsConfig.filter && gpsConfig.filter.url_exclude && gpsConfig.filter.url_exclude === mockData.urlExclude, 'Expected url exclusion to be configured but not found ' + gpsConfig).isEqualTo(true);
+- name: Check ga4 session id enricher
+  code: |-
+    const log = require('logToConsole');
+    const JSON = require('JSON');
+
+    const mockData = {
+      // Mocked field values
+      pixelUrl: 'https://gsatag.makingscience.com/v1.0.5/gauss-sa-tag.min.js',
+      trackingId: 'example.com',
+      enableManualMode: false,
+      userProvider: 'local',
+      disableDataLayer: 0,
+      enricherGa4SessionId: true
+    };
+
+    const callsInWindow = {};
+    // Create the mock of callInWindow to store the functions called
+    mock('callInWindow', (fnc, params) => {
+      log('Calling in window with fnc: ' + fnc, arguments);
+      let calledFncData = callsInWindow[fnc];
+      if (!calledFncData) {
+        calledFncData = [];
+        callsInWindow[fnc] = calledFncData;
+      }
+      calledFncData.push(arguments);
+    });
+
+    // Call runCode to run the template's code.
+    runCode(mockData);
+
+    // Verify that the tag finished successfully.
+    assertApi('gtmOnSuccess').wasCalled();
+
+    log('Calls in window: ', callsInWindow);
+    assertThat(callsInWindow.gp_send && callsInWindow.gp_send.length == 1, 'Expected a single call to gp_send but found').isEqualTo(true);
+
+    const gpsConfig = callsInWindow.gp_send[0][3];
+    log('gp_send config: ', gpsConfig);
+    assertThat(gpsConfig.msgEnrichers && gpsConfig.msgEnrichers.ga4sessionId, 'Expected ga4sessionId enricher configured but not found ' + JSON.stringify(gpsConfig.msgEnrichers)).isEqualTo(true);
 
 
 ___NOTES___
 
 Created on 11/25/2022, 11:55:01 AM
-
-
