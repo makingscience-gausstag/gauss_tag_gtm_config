@@ -1,6 +1,9 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
+  - sha: 06eb29938a456c4a98bc3bf7d0c8fccd6b668b2f
+    changeNotes: |2
+      Improved loading process and added option to obtain diagnostics on loading process.
   - sha: eeb301cbf1d7ab7fe57191b051124ced875e2992
     changeNotes: |2
       Added option to inject ga4 session id in the messages sent to server
