@@ -1,7 +1,7 @@
 homepage: "https://www.makingscience.com"
 documentation: "https://github.com/makingscience-gausstag/gauss_tag_gtm_config"
 versions:
-  - sha: 06eb29938a456c4a98bc3bf7d0c8fccd6b668b2f
+  - sha: 5eba8eae0c6d2e97ad5e8de8f7a115184d49e1d9
     changeNotes: |2
       Improved loading process and added option to obtain diagnostics on loading process.
   - sha: eeb301cbf1d7ab7fe57191b051124ced875e2992
