@@ -400,6 +400,33 @@ ___TEMPLATE_PARAMETERS___
         "simpleValueType": true,
         "defaultValue": false,
         "help": "When set to true the pixel will retrieve the ga4 session id and send in the event message to gauss servers. Only enable this property if you are sure the client uses ga4. Enabling it without ga4 will produce delays in pixel initialization."
+      },
+      {
+        "type": "CHECKBOX",
+        "name": "enricherCookies",
+        "checkboxText": "Cookies",
+        "simpleValueType": true
+      },
+      {
+        "type": "SIMPLE_TABLE",
+        "name": "enricherCookiesConfig",
+        "displayName": "Cookie Enricher Configuration",
+        "simpleTableColumns": [
+          {
+            "defaultValue": "",
+            "displayName": "Cookie name",
+            "name": "cookie",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Message Key",
+            "name": "key",
+            "type": "TEXT"
+          }
+        ],
+        "newRowButtonText": "Add configuration row",
+        "help": "Configure here the cookies to retrieve and the property name used when the message is sent to Gauss"
       }
     ]
   }
@@ -452,8 +479,8 @@ const cv = getContainerVersion();
 var doLog = cv.debugMode || cv.previewMode || params_mode == 'debug';
 
 if (doLog) {
-   log('_gp_mode_ =', params_mode);
-   log('data =', data);
+   log('[DEBUG] _gp_mode_ =', params_mode);
+   log('[DEBUG] data =', data);
 }
 
 /*******************************************
@@ -559,7 +586,7 @@ function updateObject(targetObject, obj) {
 Gauss Tag insertion
 ******************************************/
 
-const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.3.5/gauss-sa-tag.min.js';
+const defaultPixelUrl = 'https://gsatag.makingscience.com/v1.3.6/gauss-sa-tag.min.js';
 
 let pixelUrl = data.pixelUrl ? data.pixelUrl : defaultPixelUrl;
 
@@ -570,7 +597,9 @@ const gp_send = getGpSend();
  * Proceed with the gauss configuration 
  */
 function onInjected() {
-   log('Injected successfully');
+   if (doLog) {
+      log('[DEBUG] Injected successfully');
+   }
    diagnostic.updateState('tpl.injected');
    configurePixel();
 }
@@ -580,7 +609,7 @@ function onInjected() {
  */
 function onInjectionFailed() {
    if (doLog) {
-      log('Gauss pixel script couldn\'t be injected');
+      log('[ERROR] Gauss pixel script couldn\'t be injected');
    }
    diagnostic.addError({ "message": 'Gauss pixel script couldn\'t be injected' });
    data.gtmOnFailure();
@@ -726,15 +755,24 @@ function configurePixel() {
    if (data.thirdPartyCEnabled !== undefined) {
       properties.push.thirdPartyCEnabled = data.thirdPartyCEnabled;
    }
-   log('Push config: ' + properties.push.thirdPartyCEnabled);
+
    if (doLog) {
+      log('[DEBUG] Push config: ' + properties.push.thirdPartyCEnabled);
       properties.logging = 'debug';
-      log('Config properties:', properties);
+      log('[DEBUG] Config properties:', properties);
    }
 
    properties.msgEnrichers = {};
    if (data.enricherGa4SessionId !== undefined) {
       properties.msgEnrichers.ga4sessionId = data.enricherGa4SessionId;
+   }
+   properties.msgEnrichers.cookies = { enabled: false };
+   if (data.enricherCookies != undefined) {
+      properties.msgEnrichers.cookies.enabled = data.enricherCookies;
+      properties.msgEnrichers.cookies.config = data.enricherCookiesConfig;
+   } 
+   if (doLog) {
+      log('[DEBUG] Enrichers config: ' + JSON.stringify(properties.msgEnrichers));
    }
    diagnostic.updateState('tpl.prepared');
    callInWindow('gp_send', 'config', gaussId, properties);
@@ -744,13 +782,13 @@ function configurePixel() {
 
 if (queryPermission('inject_script', pixelUrl)) {
    if (doLog) {
-      log('url', pixelUrl);
+      log('[DEBUG] url', pixelUrl);
    }
    diagnostic.updateState('tpl.injecting');
    injectScript(pixelUrl, onInjected, onInjectionFailed, 'gp_send');
 } else {
    if (doLog) {
-      log('Gauss Tag: Script load failed due to permissions mismatch.');
+      log('[DEBUG] Gauss Tag: Script load failed due to permissions mismatch.');
    }
    diagnostic.addError({ "message": "No inject script permission" });
    data.gtmOnFailure();
